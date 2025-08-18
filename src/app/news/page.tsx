@@ -1,28 +1,26 @@
+// src/app/news/page.tsx
+import { headers } from "next/headers";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-export const revalidate = 0;
+export const revalidate = 300;
 
-type Item = { title: string; link: string; pubDate?: string };
+function getBaseUrl() {
+  const h = headers();
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  const host  = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+  return `${proto}://${host}`;
+}
 
-async function getNews(): Promise<Item[]> {
-
-  const base =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
-  try {
-    const res = await fetch(`${base}/api/news`, {
-      cache: "no-store",
-
-      headers: { "user-agent": "Mozilla/5.0 DataBoard" },
-      next: { revalidate: 0 },
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.items as Item[]) ?? [];
-  } catch {
-    return [];
-  }
+async function getNews() {
+  const base = getBaseUrl();
+  const res = await fetch(`${base}/api/news`, {
+    next: { revalidate: 300 },
+    cache: "force-cache",
+    headers: { "user-agent": "Mozilla/5.0 DataBoard" },
+  });
+  if (!res.ok) return [];
+  const j = await res.json();
+  return Array.isArray(j.items) ? j.items : [];
 }
 
 export default async function NewsPage() {
@@ -31,24 +29,18 @@ export default async function NewsPage() {
   return (
     <main className="p-6 grid gap-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Top News (Yahoo!ニュース)</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardHeader><CardTitle>Top News (Yahoo!ニュース)</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
           {items.length === 0 ? (
-            <div className="text-sm text-muted-foreground">
-              ニュースを取得できませんでした。
-            </div>
+            <div className="text-muted-foreground">ニュースを取得できませんでした。</div>
           ) : (
-            <ul className="space-y-2">
-              {items.map((it, i) => (
-                <li key={i} className="text-sm">
+            <ul className="list-disc pl-5">
+              {items.map((it: any) => (
+                <li key={it.link}>
                   <a className="underline" href={it.link} target="_blank" rel="noreferrer">
                     {it.title}
                   </a>
-                  {it.pubDate ? (
-                    <span className="ml-2 text-xs text-muted-foreground">{it.pubDate}</span>
-                  ) : null}
+                  {it.pubDate ? <span className="text-xs text-muted-foreground ml-2">{it.pubDate}</span> : null}
                 </li>
               ))}
             </ul>
