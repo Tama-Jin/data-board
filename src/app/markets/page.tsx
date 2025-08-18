@@ -179,17 +179,14 @@ export default function MarketsPage() {
   return (
     <main className="p-6 grid gap-6">
       <Suspense fallback={<GridSkeleton />}>
-        {/* @ts-expect-error Async Server Component */}
         <UsdJpySection />
       </Suspense>
 
       <Suspense fallback={<CardSkeleton title="Stock Indexes" />}>
-        {/* @ts-expect-error Async Server Component */}
         <IndexSection />
       </Suspense>
 
       <Suspense fallback={<CardSkeleton title="Crypto" />}>
-        {/* @ts-expect-error Async Server Component */}
         <CryptoSection />
       </Suspense>
     </main>
