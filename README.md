@@ -31,6 +31,20 @@
 - **Tailwind CSS**, **shadcn/ui**
 - **Recharts** (チャート), **pnpm**
 
+## 📸 スクリーンショット
+
+### Main
+![Main](./docs/screenshots/1.JPG)
+
+### Weather
+![Weather](./docs/screenshots/2.JPG)
+
+### Markets
+![Markets](./docs/screenshots/3.JPG)
+
+### News
+![News](./docs/screenshots/4.JPG)
+
 ## 🗂 プロジェクト構成
 data-board/
 ├─ public/ # 静的ファイル
