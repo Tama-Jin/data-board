@@ -1,7 +1,8 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import MemoBox from "@/components/MemoBox"; 
+import MemoBox from "@/components/MemoBox";
+import { headers } from "next/headers"; // ✅ 추가
 
-export const revalidate = 60; 
+export const revalidate = 60;
 
 async function getWeatherSummary() {
   const url =
@@ -16,11 +17,11 @@ async function getWeatherSummary() {
 
 // USD/JPY
 async function getUsdJpyLatest() {
-  const base =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000");
+  // ✅ 배포/프리뷰/로컬 모두에서 현재 요청의 호스트/프로토콜로 베이스 구성
+  const h = headers();
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  const host = h.get("host") ?? "localhost:3000";
+  const base = `${proto}://${host}`;
 
   const res = await fetch(`${base}/api/usdjpy`, {
     cache: "no-store",
@@ -33,10 +34,7 @@ async function getUsdJpyLatest() {
 }
 
 export default async function Home() {
-  const [wx, fx] = await Promise.all([
-    getWeatherSummary(),
-    getUsdJpyLatest(),
-  ]);
+  const [wx, fx] = await Promise.all([getWeatherSummary(), getUsdJpyLatest()]);
 
   return (
     <main className="p-6 grid gap-6">
