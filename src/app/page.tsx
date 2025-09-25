@@ -21,7 +21,7 @@ async function getUsdJpyLatest() {
   const h = headers();
   const proto = h.get("x-forwarded-proto") ?? "https";
   const host = h.get("host") ?? "localhost:3000";
-  const base = `${proto}://${host}`;
+  const base: string = `${proto}://${host}`;
 
   const res = await fetch(`${base}/api/usdjpy`, {
     cache: "no-store",
